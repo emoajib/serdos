@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: serdos_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: serdos_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - serdos_network
+
+  # Laravel Backend
+  app:
+    build: .
+    container_name: serdos_app
+    depends_on:
+      - mysql
+    ports:
+      - "1111:1111"
+      - "8080:8080"
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: serdos_db
+      DB_USERNAME: root
+      DB_PASSWORD: password
+    volumes:
+      - ./backend-api:/app
+    networks:
+      - serdos_network
+
+  # Python AI Engine
+  ai_engine:
+    build: ./ai-similarity-engine
+    container_name: serdos_ai
+    ports:
+      - "5000:5000"
+    networks:
+      - serdos_network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: serdos_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - serdos_network
+
+volumes:
+  mysql_data:
+
+networks:
+  serdos_network:
+    driver: bridge

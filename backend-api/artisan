@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Laravel Artisan Bootstrap
+ * This is a minimal artisan setup for SERDOS Digital Nusantara
+ */
+
+define('LARAVEL_START', microtime(true));
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Illuminate\Foundation\Console\Kernel;
+use Illuminate\Container\Container;
+
+// Create the application instance
+$app = require_once __DIR__ . '/bootstrap/app.php';
+
+// Create artisan kernel
+$kernel = $app->make(Kernel::class);
+
+// Run the console application
+exit($kernel->handle(
+    $input = new Symfony\Component\Console\Input\ArgvInput,
+    new Symfony\Component\Console\Output\ConsoleOutput
+));
