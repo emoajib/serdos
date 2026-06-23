@@ -13,30 +13,14 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Debug - List remote directories
+      - name: Deploy Laravel Backend
         run: |
           lftp -c "
             set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            ls -la /
-          "
-
-      - name: Create remote directories
-        run: |
-          lftp -c "
-            set ssl:verify-certificate false
-            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            mkdir serdos
-            mkdir serdos/backend-api
-          "
-
-      - name: Deploy Laravel Backend via FTP
-        run: |
-          lftp -c "
-            set ssl:verify-certificate false
-            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            cd serdos/backend-api
-            mirror -R backend-api/ .
+            mkdir -f serdos
+            mkdir -f serdos/backend-api
+            mirror -R backend-api/ serdos/backend-api/
           "
 
       - name: Deploy Public Files to Document Root
@@ -44,7 +28,8 @@ jobs:
           lftp -c "
             set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            mirror -R backend-api/public/ /public_html/
+            mkdir -f public_html
+            mirror -R backend-api/public/ public_html/
           "
 
       - name: Post-Deployment Setup
