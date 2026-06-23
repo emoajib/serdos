@@ -16,6 +16,7 @@ jobs:
       - name: Deploy Laravel Backend via FTP
         run: |
           lftp -c "
+            set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
             mirror -R backend-api/ /serdos/backend-api/
           "
@@ -23,6 +24,7 @@ jobs:
       - name: Deploy Public Files to Document Root
         run: |
           lftp -c "
+            set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
             mirror -R backend-api/public/ /public_html/
           "
@@ -30,8 +32,8 @@ jobs:
       - name: Post-Deployment Setup
         run: |
           lftp -c "
+            set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            # Create storage link
             - chmod 755 /serdos/backend-api/storage
             - chmod 755 /serdos/backend-api/bootstrap/cache
           "
