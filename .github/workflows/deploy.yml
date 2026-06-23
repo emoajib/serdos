@@ -18,6 +18,7 @@ jobs:
           lftp -c "
             set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
+            mkdir -p /serdos/backend-api/
             mirror -R backend-api/ /serdos/backend-api/
           "
 
@@ -26,6 +27,7 @@ jobs:
           lftp -c "
             set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
+            mkdir -p /public_html/
             mirror -R backend-api/public/ /public_html/
           "
 
@@ -34,6 +36,6 @@ jobs:
           lftp -c "
             set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            - chmod 755 /serdos/backend-api/storage
-            - chmod 755 /serdos/backend-api/bootstrap/cache
+            chmod 755 /serdos/backend-api/storage 2>/dev/null || true
+            chmod 755 /serdos/backend-api/bootstrap/cache 2>/dev/null || true
           "
