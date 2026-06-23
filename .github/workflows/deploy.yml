@@ -10,6 +10,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: frontend-web/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend-web
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend-web
+          npm run build
+
+      - name: Copy build to Laravel public
+        run: |
+          cp -r frontend-web/dist/* backend-api/public/
+          cp -r frontend-web/dist/assets backend-api/public/assets/ 2>/dev/null || true
+
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
