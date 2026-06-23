@@ -13,30 +13,11 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Deploy Laravel Backend
-        run: |
-          lftp -c "
-            set ssl:verify-certificate false
-            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            mkdir -f serdos
-            mkdir -f serdos/backend-api
-            mirror -R backend-api/ serdos/backend-api/
-          "
-
-      - name: Deploy Public Files to Document Root
+      - name: Deploy Frontend to Public HTML
         run: |
           lftp -c "
             set ssl:verify-certificate false
             open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
             mkdir -f public_html
             mirror -R backend-api/public/ public_html/
-          "
-
-      - name: Post-Deployment Setup
-        run: |
-          lftp -c "
-            set ssl:verify-certificate false
-            open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}
-            chmod 755 serdos/backend-api/storage 2>/dev/null || true
-            chmod 755 serdos/backend-api/bootstrap/cache 2>/dev/null || true
           "
